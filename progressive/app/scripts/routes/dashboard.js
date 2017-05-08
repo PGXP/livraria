@@ -5,32 +5,16 @@ app.config(['$routeProvider', 'USER_ROLES',
 
         $routeProvider
 
-                .when('/', {
-                    templateUrl: 'views/cep.html',
+                .when('/login', {
+                    templateUrl: 'views/login.html',
                     controller: 'DashboardController',
                     data: {
                         authorizedRoles: [USER_ROLES.NOT_LOGGED]
                     }
                 })
 
-                .when('/cep', {
-                    templateUrl: 'views/cep.html',
-                    controller: 'DashboardController',
-                    data: {
-                        authorizedRoles: [USER_ROLES.NOT_LOGGED]
-                    }
-                })
-
-                .when('/uf', {
-                    templateUrl: 'views/uf.html',
-                    controller: 'DashboardController',
-                    data: {
-                        authorizedRoles: [USER_ROLES.NOT_LOGGED]
-                    }
-                })
-
-                .when('/logradouro', {
-                    templateUrl: 'views/logradouro.html',
+                .when('/register', {
+                    templateUrl: 'views/register.html',
                     controller: 'DashboardController',
                     data: {
                         authorizedRoles: [USER_ROLES.NOT_LOGGED]
