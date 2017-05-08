@@ -1,0 +1,23 @@
+﻿DROP TABLE usuario;
+
+CREATE TABLE usuario
+(
+  id uuid not null,
+  livraria_id uuid not null,
+  firstname varchar(128),
+  email varchar(128),
+  pass varchar(128),
+  perfil int,
+  cpf character varying(255),
+  telephonenumber character varying(255),
+  CONSTRAINT usuario_pkey PRIMARY KEY (id),
+  CONSTRAINT uk_email UNIQUE (cpf)
+);
+
+CREATE TABLE livraria
+(
+  id uuid not null,
+  descricao varchar(128),
+  CONSTRAINT livraria_pkey PRIMARY KEY (id),
+  CONSTRAINT uk_livraria UNIQUE (descricao)
+)
