@@ -80,13 +80,8 @@ public class MultiTenantProvider implements MultiTenantConnectionProvider, Servi
     public Connection getConnection(String tenantIdentifier) throws SQLException {
         final Connection connection = getAnyConnection();
         try {
-            String setDatabase = "USE";
-            String masterDatabase = "master";
-
-            if (!masterDatabase.equals(tenantIdentifier)) {
-                connection.createStatement().execute(setDatabase + " " + tenantIdentifier);
-            }
-
+            String setDatabase = " SET search_path to ";
+            connection.createStatement().execute(setDatabase + " " + tenantIdentifier);
         } catch (final SQLException e) {
             e.printStackTrace();
         }
@@ -100,7 +95,7 @@ public class MultiTenantProvider implements MultiTenantConnectionProvider, Servi
 
     @Override
     public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
-        releaseAnyConnection(connection);
+        connection.createStatement().execute("SET search_path to public");
     }
 
 }

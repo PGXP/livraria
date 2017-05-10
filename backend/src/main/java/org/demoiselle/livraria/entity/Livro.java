@@ -2,6 +2,7 @@ package org.demoiselle.livraria.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,28 +23,28 @@ public class Livro implements Serializable {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(unique = true)
-    private String id;
+    private UUID id;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
     @Column(nullable = false, length = 128)
-    private String description;
+    private String descricao;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     @Override
@@ -70,6 +71,6 @@ public class Livro implements Serializable {
 
     @Override
     public String toString() {
-        return "Livro{" + "id=" + id + ", description=" + description + '}';
+        return "Livro{" + "id=" + id + ", description=" + descricao + '}';
     }
 }

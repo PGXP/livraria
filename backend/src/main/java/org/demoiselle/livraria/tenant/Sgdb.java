@@ -29,7 +29,7 @@ public class Sgdb implements Serializable {
     private Long id;
 
     @NotNull
-    @Size(max = 1000, min = 2)
+    @Size(max = 8192, min = 2)
     @Column
     private String comando;
 

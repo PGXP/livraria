@@ -3,11 +3,16 @@ package org.demoiselle.livraria.tenant;
 import org.demoiselle.livraria.constants.Perfil;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -17,7 +22,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Email;
 
 @Entity
-@Table(uniqueConstraints = {
+@Table(name = "usuario", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"email"})})
 @XmlRootElement
 public class User implements Serializable {
@@ -26,7 +31,12 @@ public class User implements Serializable {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(unique = true)
-    private String id;
+    private UUID id;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "livraria_id")
+    private Livraria livraria;
 
     @NotNull
     @Basic(optional = false)
@@ -50,10 +60,7 @@ public class User implements Serializable {
     @Column
     private Perfil perfil;
 
-    @NotNull
-    private Livraria livraria;
-
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -95,6 +102,10 @@ public class User implements Serializable {
 
     public void setLivraria(Livraria livraria) {
         this.livraria = livraria;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     @Override

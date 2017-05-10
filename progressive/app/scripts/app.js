@@ -16,7 +16,7 @@ var app = angular.module('app', [
 
         $websocketProvider.$setup({
             reconnect: true,
-            reconnectInterval: 2000
+            reconnectInterval: 777
         });
 
         Notification.requestPermission().then(function (result) {
@@ -36,15 +36,15 @@ var app = angular.module('app', [
             return;
         }
 
-        navigator.serviceWorker.register("/service-worker.js", { scope: '/' })
-            .then(function (registration) {
-                console.log("Service worker registered, scope: " + registration.scope);
-                console.log("Refresh the page to talk to it.");
-                // If we want to, we might do `location.reload();` so that we'd be controlled by it
-            })
-            .catch(function (error) {
-                console.log("Service worker registration failed: " + error.message);
-            });
+        navigator.serviceWorker.register("/service-worker.js", {scope: '/'})
+                .then(function (registration) {
+                    console.log("Service worker registered, scope: " + registration.scope);
+                    console.log("Refresh the page to talk to it.");
+                    // If we want to, we might do `location.reload();` so that we'd be controlled by it
+                })
+                .catch(function (error) {
+                    console.log("Service worker registration failed: " + error.message);
+                });
 
         if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
             console.log('Notifications aren\'t supported.');
@@ -65,45 +65,45 @@ var app = angular.module('app', [
 
 app.config(['$httpProvider', function ($httpProvider) {
 
-    $httpProvider.interceptors.push(['$q', '$rootScope', 'AppService', 'ENV', function ($q, $rootScope, AppService, ENV) {
-        return {
-            'request': function (config) {
-                $rootScope.$broadcast('loading-started');
+        $httpProvider.interceptors.push(['$q', '$rootScope', 'AppService', 'ENV', function ($q, $rootScope, AppService, ENV) {
+                return {
+                    'request': function (config) {
+                        $rootScope.$broadcast('loading-started');
 
-                var token = AppService.getToken();
+                        var token = AppService.getToken();
 
-                if (ENV.name === "development") {
-                    if (config.url.indexOf("api") !== -1) {
-                        config.url = ENV.apiEndpoint + config.url;
+                        if (ENV.name === "development") {
+                            if (config.url.indexOf("api") !== -1) {
+                                config.url = ENV.apiEndpoint + config.url;
+                            }
+                        }
+
+                        if (token) {
+                            config.headers['Authorization'] = "Token " + token;
+                        }
+
+                        return config || $q.when(config);
+                    },
+                    'response': function (response) {
+                        $rootScope.$broadcast('loading-complete');
+                        return response || $q.when(response);
+                    },
+                    'responseError': function (rejection) {
+                        $rootScope.$broadcast('loading-complete');
+                        return $q.reject(rejection);
+                    },
+                    'requestError': function (rejection) {
+                        $rootScope.$broadcast('loading-complete');
+                        return $q.reject(rejection);
                     }
-                }
+                };
+            }]);
 
-                if (token) {
-                    config.headers['Authorization'] = "Token " + token;
-                }
+        $httpProvider.interceptors.push(['$injector', function ($injector) {
+                return $injector.get('AuthInterceptor');
+            }]);
 
-                return config || $q.when(config);
-            },
-            'response': function (response) {
-                $rootScope.$broadcast('loading-complete');
-                return response || $q.when(response);
-            },
-            'responseError': function (rejection) {
-                $rootScope.$broadcast('loading-complete');
-                return $q.reject(rejection);
-            },
-            'requestError': function (rejection) {
-                $rootScope.$broadcast('loading-complete');
-                return $q.reject(rejection);
-            }
-        };
     }]);
-
-    $httpProvider.interceptors.push(['$injector', function ($injector) {
-        return $injector.get('AuthInterceptor');
-    }]);
-
-}]);
 
 app.run(['$rootScope', '$location', '$window', 'AUTH_EVENTS', 'APP_EVENTS', 'USER_ROLES', 'AuthService', 'AppService', 'AlertService',
     function ($rootScope, $location, $window, AUTH_EVENTS, APP_EVENTS, USER_ROLES, AuthService, AppService, AlertService) {

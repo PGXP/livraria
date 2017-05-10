@@ -19,7 +19,7 @@ public class SchemaResolver implements CurrentTenantIdentifierResolver {
 
     @Override
     public String resolveCurrentTenantIdentifier() {
-        return dml.getParams("tenant");
+        return (dml == null || dml.getParams("tenant") == null || dml.getParams("tenant").isEmpty()) ? "public" : dml.getIdentity();
     }
 
     @Override

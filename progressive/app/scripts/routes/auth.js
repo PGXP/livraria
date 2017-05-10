@@ -7,7 +7,7 @@ app.config(['$routeProvider', 'USER_ROLES',
 
                 .when('/login', {
                     templateUrl: 'views/login.html',
-                    controller: 'DashboardController',
+                    controller: 'AuthController',
                     data: {
                         authorizedRoles: [USER_ROLES.NOT_LOGGED]
                     }
@@ -15,7 +15,15 @@ app.config(['$routeProvider', 'USER_ROLES',
 
                 .when('/register', {
                     templateUrl: 'views/register.html',
-                    controller: 'DashboardController',
+                    controller: 'AuthController',
+                    data: {
+                        authorizedRoles: [USER_ROLES.NOT_LOGGED]
+                    }
+                })
+
+                .when('/aminesia', {
+                    templateUrl: 'views/aminesia.html',
+                    controller: 'AuthController',
                     data: {
                         authorizedRoles: [USER_ROLES.NOT_LOGGED]
                     }

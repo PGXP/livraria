@@ -2,11 +2,15 @@ package org.demoiselle.livraria.tenant;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,7 +26,7 @@ public class Livraria implements Serializable {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(unique = true)
-    private String id;
+    private UUID id;
 
     @Basic(optional = false)
     @NotNull
@@ -30,11 +34,11 @@ public class Livraria implements Serializable {
     @Column(nullable = false, length = 128)
     private String description;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

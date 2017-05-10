@@ -1,10 +1,10 @@
 package org.demoiselle.livraria.service;
 
-
 import io.swagger.annotations.Api;
 import org.demoiselle.livraria.dao.UserDAO;
 import org.demoiselle.livraria.security.Credentials;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,6 +14,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.ok;
 import org.demoiselle.jee.security.annotation.Authenticated;
+import org.demoiselle.livraria.security.UserRegister;
+import org.demoiselle.livraria.tenant.User;
 
 @Api("Auth")
 @Path("auth")
@@ -27,6 +29,13 @@ public class AuthREST {
     @POST
     public Response login(Credentials credentials) {
         return ok().entity(dao.login(credentials).toString()).build();
+    }
+
+    @POST
+    @Transactional
+    @Path("register")
+    public Response register(UserRegister user) {
+        return ok().entity(dao.register(user).toString()).build();
     }
 
     @GET

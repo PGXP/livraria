@@ -11,10 +11,7 @@
         <!-- Bootstrap 3.3.4 -->
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <!-- build:css(.) styles/vendor.css -->
-        <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
-        <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="../bower_components/admin-lte/dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
-        <link href="bower_components/admin-lte/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="bower_components/admin-lte/dist/css/skins/_all-skins.min.css"/>
         <!-- bower:css -->
         <link rel="stylesheet" href="bower_components/admin-lte/dist/css/AdminLTE.css" />
         <link rel="stylesheet" href="bower_components/angular-chart.js/dist/angular-chart.css" />
@@ -44,7 +41,7 @@
         <div class="wrapper" ng-cloak>
 
             <!-- Main Header -->
-            <header class="main-header" ng-if="!$root.currentUser">
+            <header class="main-header" ng-show="$root.currentUser">
 
                 <!-- Logo -->
                 <a href="#dashboard" class="logo uil-ring-anim">
@@ -84,14 +81,14 @@
             </header>
 
             <!-- Left side column. contains the logo and sidebar -->
-            <aside class="main-sidebar" ng-if="!$root.currentUser">
+            <aside class="main-sidebar" ng-show="$root.currentUser">
 
                 <!-- sidebar: style can be found in sidebar.less -->
                 <section class="sidebar">
 
                     <!-- Sidebar Menu -->
                     <ul class="sidebar-menu animated fadeInDown">
-                        <li class="header">Conectados: {{conectados}}</li>
+                        <li class="header">Conectados: {{$root.conectados}}</li>
                         <!-- Optionally, you can add icons to the links -->
                         <li><a href="http://demoiselle.io/"><i class='fa fa-backward'></i> <span>Voltar</span></a></li>
                         <li><a href="#exemplo"><i class='fa fa-dashboard'></i> <span>Exemplo</span></a></li>
@@ -115,7 +112,7 @@
             <!-- /.content-wrapper -->
 
             <!-- Main Footer -->
-            <footer class="main-footer" ng-if="!$root.currentUser">
+            <footer class="main-footer" ng-show="$root.currentUser">
                 <div class="pull-right hidden-xs">
                 </div>
                 <!-- Default to the left -->
@@ -124,7 +121,7 @@
 
         </div>
         <!-- ./wrapper -->
-        <!--<div ng-if="!currentUser" ng-include src="'views/login.html'" ></div>-->
+        <!--<div ng-show="!currentUser" ng-include src="'views/login.html'" ></div>-->
 
         <!-- build:js(.) scripts/vendor.js -->
         <!-- bower:js -->
@@ -168,9 +165,10 @@
         <!-- injector:js -->
         <script src="/scripts/app.js"></script>
         <script src="/scripts/config.js"></script>
+        <script src="/scripts/controllers/auth.js"></script>
         <script src="/scripts/controllers/dashboard.js"></script>
         <script src="/scripts/directives/directives.js"></script>
-        <script src="/scripts/routes/dashboard.js"></script>
+        <script src="/scripts/routes/auth.js"></script>
         <script src="/scripts/services/alert.js"></script>
         <script src="/scripts/services/app.js"></script>
         <script src="/scripts/services/auth.js"></script>

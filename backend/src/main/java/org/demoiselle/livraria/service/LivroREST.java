@@ -8,17 +8,16 @@ import javax.ws.rs.Path;
 import org.demoiselle.jee.core.api.crud.Result;
 import org.demoiselle.jee.crud.AbstractREST;
 import org.demoiselle.jee.crud.Search;
-import org.demoiselle.jee.security.annotation.Authenticated;
 
 @Api("v1/Livros")
 @Path("v1/livros")
-@Authenticated
+//@Authenticated
 public class LivroREST extends AbstractREST< Livro, String> {
 
     @GET
     @Override
     @Transactional
-    @Search(fields = {"id", "description"}) // Escolha quais campos serão passados para o frontend
+    @Search(fields = {"id", "descricao"}) // Escolha quais campos serão passados para o frontend
     public Result find() {
         return bc.find();
     }

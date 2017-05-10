@@ -7,6 +7,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import static java.security.MessageDigest.getInstance;
 import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import javax.inject.Inject;
@@ -16,6 +18,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import org.demoiselle.jee.core.api.security.DemoiselleUser;
 import org.demoiselle.jee.core.api.security.SecurityContext;
@@ -23,7 +26,9 @@ import org.demoiselle.jee.core.api.security.Token;
 import org.demoiselle.jee.crud.AbstractDAO;
 import org.demoiselle.jee.security.exception.DemoiselleSecurityException;
 import org.demoiselle.jee.security.message.DemoiselleSecurityMessages;
+import org.demoiselle.livraria.security.UserRegister;
 import org.demoiselle.livraria.tenant.Livraria;
+import org.demoiselle.livraria.tenant.Sgdb;
 
 public class UserDAO extends AbstractDAO<User, String> {
 
@@ -40,6 +45,12 @@ public class UserDAO extends AbstractDAO<User, String> {
 
     @Inject
     private LivrariaDAO livrariadao;
+
+    @Inject
+    private SgdbDAO sgbddao;
+
+    @Inject
+    private TenantDAO tenantdao;
 
     @Inject
     private DemoiselleSecurityMessages bundle;
@@ -96,10 +107,11 @@ public class UserDAO extends AbstractDAO<User, String> {
         }
 
         loggedUser.setName(usu.getFirstName());
-        loggedUser.setIdentity(usu.getId());
+        loggedUser.setIdentity(usu.getId().toString());
         loggedUser.addRole(usu.getPerfil().getValue());
 
-        loggedUser.addParam("Email", usu.getEmail());
+        loggedUser.addParam("email", usu.getEmail());
+        loggedUser.addParam("tenant", usu.getLivraria().getId().toString());
         securityContext.setUser(loggedUser);
 
         return token;
@@ -124,7 +136,7 @@ public class UserDAO extends AbstractDAO<User, String> {
         return sen;
     }
 
-    public String registro(User entity) {
+    public Token register(UserRegister entity) {
 
         try {
 
@@ -133,30 +145,52 @@ public class UserDAO extends AbstractDAO<User, String> {
             Root<User> from = query.from(User.class);
             TypedQuery<User> typedQuery = getEntityManager().createQuery(
                     query.select(from)
-                            .where(builder.equal(from.get("email"), entity.getEmail()))
+                            .where(builder.equal(from.get("email"), entity.getUsername()))
             );
 
-            if (!typedQuery.getResultList().isEmpty()) {
+            if (typedQuery.getResultList() != null && !typedQuery.getResultList().isEmpty()) {
                 throw new DemoiselleSecurityException("Usuário existe, utilize outro email", UNAUTHORIZED.getStatusCode());
             }
 
-            if (livrariadao.nomeExists(entity.getLivraria().getDescription())) {
+            if (livrariadao.nomeExists(entity.getLivraria())) {
                 throw new DemoiselleSecurityException("Livraria ja existe, escolha outro nome", UNAUTHORIZED.getStatusCode());
             }
 
             Livraria livraria = new Livraria();
-            livraria.setDescription(entity.getLivraria().getDescription());
+            livraria.setDescription(entity.getLivraria());
             livraria = livrariadao.persist(livraria);
 
-            entity.setLivraria(livraria);
-            entity.setPerfil(Perfil.ADMINISTRADOR);
-            entity.setPass("0000000000");
-            persist(entity);
+            User user = new User();
+            user.setLivraria(livraria);
+            user.setFirstName(entity.getNome());
+            user.setEmail(entity.getUsername());
+            user.setPerfil(Perfil.ADMINISTRADOR);
+            user.setPass(entity.getPassword());
+            user = persist(user);
 
-            return "Verifique seu email e use o link para concluir seu cadastro";
-        } catch (Exception e) {
+            loggedUser.setName(user.getFirstName());
+            loggedUser.setIdentity(user.getId().toString());
+            loggedUser.addRole(user.getPerfil().getValue());
+
+            loggedUser.addParam("email", user.getEmail());
+            loggedUser.addParam("tenant", user.getLivraria().getId().toString());
+            securityContext.setUser(loggedUser);
+
+            for (Iterator<?> it = sgbddao.find().getContent().iterator(); it.hasNext();) {
+                Sgdb sgdb = (Sgdb) it.next();
+                tenantdao.createSchema(sgdb.getComando().replaceAll("DEMO", user.getLivraria().getId().toString().replace("-", "")));
+            }
+
+            return token;
+
+        } catch (DemoiselleSecurityException e) {
+            e.printStackTrace();
             throw new DemoiselleSecurityException("Erro ao registrar Livraria", UNAUTHORIZED.getStatusCode());
         }
+
+    }
+
+    public void createDatabase() {
 
     }
 

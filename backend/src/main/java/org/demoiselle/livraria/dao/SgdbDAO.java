@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.demoiselle.livraria.dao;
 
 import org.demoiselle.livraria.tenant.Sgdb;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.demoiselle.jee.crud.AbstractDAO;
-
 
 /**
  *
@@ -24,5 +18,5 @@ public class SgdbDAO extends AbstractDAO<Sgdb, Long> {
     protected EntityManager getEntityManager() {
         return em.getEntityManagerFactory().createEntityManager();
     }
-    
+
 }
